@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Animated Markers',
       theme: ThemeData.dark(),
-      home: const MyHomePage(title: 'Animated Markers'),
+      home: const MyHomePage(title: 'Canchas sintéticas'),
     );
   }
 }
