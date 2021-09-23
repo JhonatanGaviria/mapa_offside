@@ -12,9 +12,10 @@ const MARKER_COLOR = Color(0xFF3DC5A7);
 const MARKER_SIZE_EXPANDED = 45.0;
 const MARKER_SIZE_SHRINKED = 25.0;
 
-double latitud = 5.339316898506753;
-double longitud = -72.4016947210862;
+double latitud = 5.337849371359686;
+double longitud = -72.39068750324083;   
 LatLng _myLocation = LatLng(latitud, longitud);
+bool isVisible = false;
 void main() {
   runApp(const MyApp());
 }
@@ -49,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
   final _pageController = PageController();
   late final AnimationController _animationController;
-  int _selectedIndex = 0;
+  int _selectedIndex = -1;
   List<Marker> _buildMarkers(){
     final _markerList = <Marker>[];
     for (int i = 0; i < mapMarkers.length; i++) {
@@ -64,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               onTap: (){
                 _selectedIndex =i;
                 setState(() {
+                  isVisible = true;
                   _pageController.animateToPage(i, duration: const Duration(milliseconds: 500), curve: Curves.elasticOut);
                   print('Selected: ${mapItem.title}');
                 });
@@ -224,44 +226,47 @@ class _MapItemDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     final _styleTitle = TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold );
     final _styleAddress = TextStyle(color: Colors.grey[800], fontSize: 14);
-    return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Card(
-        margin: EdgeInsets.zero,
-        color: Colors.white,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Expanded(
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Image.asset(mapMarker.image),
-                    ),
-                  Expanded(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(latitud.toString(), style: _styleTitle,),
-                        Text(mapMarker.title, style: _styleTitle,),
-                        const SizedBox(height: 10),
-                        Text(mapMarker.address, style: _styleAddress,),
-                      ],
-                    ),
-                  ),  
-                ],
+    return Visibility(
+      visible: isVisible,
+          child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Card(
+          margin: EdgeInsets.zero,
+          color: Colors.white,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Image.asset(mapMarker.image),
+                      ),
+                    Expanded(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          //Text(latitud.toString(), style: _styleTitle,),
+                          Text(mapMarker.title, style: _styleTitle,),
+                          const SizedBox(height: 10),
+                          Text(mapMarker.address, style: _styleAddress,),
+                        ],
+                      ),
+                    ),  
+                  ],
+                ),
               ),
-            ),
-            MaterialButton(
-              padding: EdgeInsets.zero,
-              onPressed: () => null, 
-              color: MARKER_COLOR,
-              elevation: 6,
-              child: Text(
-                'LLAMAR', 
-                style: TextStyle(fontWeight: FontWeight.bold),),
-            ),
-          ],
+              MaterialButton(
+                padding: EdgeInsets.zero,
+                onPressed: () => null, 
+                color: MARKER_COLOR,
+                elevation: 6,
+                child: Text(
+                  'LLAMAR', 
+                  style: TextStyle(fontWeight: FontWeight.bold),),
+              ),
+            ],
+          ),
         ),
       ),
     );
