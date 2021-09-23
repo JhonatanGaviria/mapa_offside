@@ -1,5 +1,5 @@
 import 'dart:ui';
-
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -11,17 +11,21 @@ const MAPBOX_STYLE = 'mapbox/dark-v10';
 const MARKER_COLOR = Color(0xFF3DC5A7);
 const MARKER_SIZE_EXPANDED = 45.0;
 const MARKER_SIZE_SHRINKED = 25.0;
-final _myLocation = LatLng(7.09102409354867, -70.75577235767263);
+
+double latitud = 5.339316898506753;
+double longitud = -72.4016947210862;
+LatLng _myLocation = LatLng(latitud, longitud);
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+
   const MyApp({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Animated Markers',
+      title: 'Canchas',
       theme: ThemeData.dark(),
       home: const MyHomePage(title: 'Canchas sintéticas'),
     );
@@ -34,13 +38,19 @@ class MyHomePage extends StatefulWidget {
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
-
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin{
-
+    obtenerUbi() async{
+    final geoposition = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      double latitud2 = geoposition.latitude;
+      double longitud2 = geoposition.longitude;
+      _myLocation = LatLng(latitud2, longitud2);
+    });
+    //final geoposition = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  }
   final _pageController = PageController();
   late final AnimationController _animationController;
   int _selectedIndex = 0;
-
   List<Marker> _buildMarkers(){
     final _markerList = <Marker>[];
     for (int i = 0; i < mapMarkers.length; i++) {
@@ -72,10 +82,14 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
   }
   @override
   void initState() {
+    obtenerUbi();
     _animationController = AnimationController(vsync: this, duration: const Duration(milliseconds: 600));
     _animationController.repeat(reverse: true);
     super.initState();
   }
+  //obtener ubicacion
+
+  
   @override
 
   void dispose() {
@@ -96,7 +110,8 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
               minZoom: 5,
               maxZoom: 18,
               zoom: 14,
-              center: _myLocation,
+              center: _myLocation, 
+              ///0.0
             ),
             nonRotatedLayers: [
               TileLayerOptions(
@@ -113,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                   Marker(
                     height: 50,
                     width: 50,
-                    point: _myLocation, 
+                    point: _myLocation, //null null dfdfdfdfd
                     builder: (_){
                       return _MyLocationMarker(_animationController);
                     }),
@@ -205,7 +220,7 @@ class _MapItemDetails extends StatelessWidget {
     }) : super(key: key);
 
   final MapMarker mapMarker;
-
+  
   @override
   Widget build(BuildContext context) {
     final _styleTitle = TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold );
@@ -228,7 +243,7 @@ class _MapItemDetails extends StatelessWidget {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        //Text('Cancha sintética', style: _styleTitle,),
+                        Text(latitud.toString(), style: _styleTitle,),
                         Text(mapMarker.title, style: _styleTitle,),
                         const SizedBox(height: 10),
                         Text(mapMarker.address, style: _styleAddress,),
